@@ -1,6 +1,5 @@
 import React from "react";
 
-// Added a new prop: 'isTextArea' and 'rows' for textarea height
 const CustomInput = ({
   label,
   type = "text",

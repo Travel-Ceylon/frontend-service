@@ -15,32 +15,13 @@ export const DashboardTab = ({ profile }) => {
   const { images, description, driverBio } = profile;
 
   return (
-    <div className="max-w-screen xl:mx-18 mx-8 px-8 py-8 bg-white rounded-md">
+    <div className="max-w-screen xl:mx-18 mx-8 px-4 sm:px-8 py-4 bg-white rounded-md">
       {/* VEHICLE IMAGES SECTION */}
-      <section className="mb-8 ">
-        <div className="flex justify-between">
-          <h2 className="text-lg font-semibold mb-4 text-gray-600">Images</h2>
-          <div
-            onClick={() => setIsModalOpen(true)}
-            className="flex items-center text-green-600 cursor-pointer "
-          >
-            <button className="px-2 py-2 text-sm font-medium text-green-600 cursor-pointer">
-              Edit Details
-            </button>
-            <svg
-              className="w-3 h-3"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-              />
-            </svg>
-          </div>
+      <section className="mb-4 ">
+        <div className="flex justify-between items-center">
+          <h2 className="text-sm sm:text-lg  font-semibold mb-4 text-gray-600">
+            Images
+          </h2>
         </div>
 
         <div className="grid grid-cols-3 gap-3">
@@ -68,14 +49,14 @@ export const DashboardTab = ({ profile }) => {
         </div>
       </section>
 
-      {/* ============================================ */}
       {/* VEHICLE DESCRIPTION */}
-      {/* ============================================ */}
-      <section className="mb-8">
+      <section className="mb-4">
         <div className="flex justify-between items-center mb-3">
-          <h2 className="text-lg font-semibold text-gray-600">Description</h2>
+          <h2 className="text-sm sm:text-lg font-semibold text-gray-600">
+            Description
+          </h2>
         </div>
-        <p className="text-gray-700 text-sm leading-relaxed border border-gray-200 p-3 rounded-md">
+        <p className="text-gray-700 text-xs sm:text-sm leading-relaxed border border-gray-200 p-3 rounded-md">
           {description ||
             "Well maintained 7 Seater super offerss and air conditioned. Comfort and style together to make their trip most exciting. Fuel efficient and therefore, You can easily travel to any destination of your choice without worrying about the cost and maintenance while staying with our reliable service for 24 hours. Our brand new model will let you travel to any part of the country and let you explore with your own accord."}
         </p>
@@ -86,11 +67,11 @@ export const DashboardTab = ({ profile }) => {
       {/* ============================================ */}
       <section className="mb-8">
         <div className="flex justify-between items-center mb-3">
-          <h2 className="text-lg font-semibold text-gray-600">
+          <h2 className="text-sm sm:text-lg font-semibold text-gray-600">
             About the Driver
           </h2>
         </div>
-        <div className="flex items-center space-x-4 p-4">
+        <div className=" ">
           <div className="border border-gray-200 p-3 w-full rounded-md">
             <p className="text-gray-700 text-xs sm:text-sm leading-relaxed">
               {driverBio ||
@@ -99,6 +80,27 @@ export const DashboardTab = ({ profile }) => {
           </div>
         </div>
       </section>
+      <div
+        onClick={() => setIsModalOpen(true)}
+        className="flex items-center justify-center py-1 text-white bg-green-400 rounded-md cursor-pointer "
+      >
+        <button className="px-2 py-2 text-sm font-medium  cursor-pointer">
+          Edit Details
+        </button>
+        <svg
+          className="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+          />
+        </svg>
+      </div>
       {/* 2. THE MODAL */}
       <EditTaxiModal
         isOpen={isModalOpen}

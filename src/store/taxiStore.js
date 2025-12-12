@@ -120,7 +120,6 @@ export const useTaxiStore = create((set, get) => ({
     }
   },
 
-  // GET TAXI BOOKINGS
   // Fetches all bookings for this taxi service
 
   getTaxiBookings: async () => {
@@ -134,7 +133,6 @@ export const useTaxiStore = create((set, get) => ({
     }
   },
 
-  // SUBMIT REGISTRATION
   // Sends all form data to backend
 
   submit: async () => {

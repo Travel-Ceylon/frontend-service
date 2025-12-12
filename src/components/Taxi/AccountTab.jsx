@@ -1,18 +1,22 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { Pencil } from "lucide-react"; // Import the Pencil icon
+import { useAuthStore } from "../../store/authStore"; // Import your auth store
 
 export const AccountTab = ({ user }) => {
-  const [name, setName] = useState("");
+  // We only need state for fields that can be updated: email and password
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [phone, setPhone] = useState("");
+  const [isUpdating, setIsUpdating] = useState(false); // State for loading
+
+  // Get the update action from the store
+  const { updateProfile } = useAuthStore();
 
   // Populate form fields with user data
   useEffect(() => {
     if (user) {
-      setName(user.name || "");
       setEmail(user.email || "");
-      setPhone(user.phone || "");
+      // Note: We intentionally don't set the password state from 'user' for security
     }
   }, [user]);
 
@@ -24,33 +28,59 @@ export const AccountTab = ({ user }) => {
     );
   }
 
-  // Handle account update
-  const handleUpdate = (field) => {
-    toast.success(`${field} updated successfully!`);
-    // TODO: Implement actual API call to update user data
+  // Handle account update (now async and takes the field to update)
+  const handleUpdate = async (field) => {
+    setIsUpdating(true);
+    let updates = {};
+    let oldValue = user[field.toLowerCase()] || "";
+    let newValue;
+
+    if (field === "Email") {
+      newValue = email;
+      // Basic client-side validation for change
+      if (newValue === oldValue) {
+        toast("Email is already up to date.", { icon: "ℹ️" });
+        setIsUpdating(false);
+        return;
+      }
+      updates.email = newValue;
+    } else if (field === "Password") {
+      newValue = password;
+      // Password validation: Ensure it's not empty
+      if (!newValue || newValue.length < 6) {
+        toast.error("Password must be at least 6 characters.");
+        setIsUpdating(false);
+        return;
+      }
+      updates.password = newValue;
+    } else {
+      setIsUpdating(false);
+      return;
+    }
+
+    try {
+      // Call the store action
+      await updateProfile(updates);
+
+      // If Password update succeeds, clear the input field for security
+      if (field === "Password") {
+        setPassword("");
+      }
+      // Note: The toast.success is already inside the updateProfile action
+    } catch (error) {
+      // Errors are handled in the store, but we catch here to stop loading
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
-  return (
-    <div className="max-w-2xl mx-auto px-6 py-8">
-      <div className="space-y-6">
-        {/* Name field */}
-        <div className="flex items-center justify-between gap-6">
-          <label className="text-sm font-medium text-gray-700 w-32">Name</label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
-            placeholder="example User"
-          />
-          <button
-            onClick={() => handleUpdate("Name")}
-            className="px-6 py-2 border border-green-400 text-green-600 rounded-md hover:bg-green-50 transition font-medium"
-          >
-            Change
-          </button>
-        </div>
+  const isEmailChanged = email !== user?.email;
+  const isPasswordValid = password.length >= 6; // Simple check
 
+  // --- RENDER ---
+  return (
+    <div className="max-w-screen mx-auto px-2 py-8">
+      <div className="space-y-4">
         {/* Email field */}
         <div className="flex items-center justify-between gap-6">
           <label className="text-sm font-medium text-gray-700 w-32">
@@ -62,12 +92,22 @@ export const AccountTab = ({ user }) => {
             onChange={(e) => setEmail(e.target.value)}
             className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
             placeholder="exampleuser@gmail.com"
+            disabled={isUpdating}
           />
           <button
             onClick={() => handleUpdate("Email")}
-            className="px-6 py-2 border border-green-400 text-green-600 rounded-md hover:bg-green-50 transition font-medium"
+            disabled={!isEmailChanged || isUpdating}
+            className={`px-3 py-2 border rounded-md transition font-medium ${
+              isEmailChanged
+                ? "border-green-400 text-green-600 hover:bg-green-50"
+                : "border-gray-300 text-gray-400 cursor-not-allowed"
+            }`}
           >
-            Change
+            {isUpdating ? (
+              <span className="animate-pulse">...</span>
+            ) : (
+              <Pencil className="w-5 h-5" />
+            )}
           </button>
         </div>
 
@@ -81,33 +121,23 @@ export const AccountTab = ({ user }) => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
-            placeholder="************"
+            placeholder="New password (min 6 chars)"
+            disabled={isUpdating}
           />
           <button
             onClick={() => handleUpdate("Password")}
-            className="px-6 py-2 border border-green-400 text-green-600 rounded-md hover:bg-green-50 transition font-medium"
+            disabled={!isPasswordValid || isUpdating}
+            className={`px-3 py-2 border rounded-md transition font-medium ${
+              isPasswordValid
+                ? "border-green-400 text-green-600 hover:bg-green-50"
+                : "border-gray-300 text-gray-400 cursor-not-allowed"
+            }`}
           >
-            Change
-          </button>
-        </div>
-
-        {/* Phone number field */}
-        <div className="flex items-center justify-between gap-6">
-          <label className="text-sm font-medium text-gray-700 w-32">
-            Phone number
-          </label>
-          <input
-            type="tel"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
-            placeholder="0771234545"
-          />
-          <button
-            onClick={() => handleUpdate("Phone")}
-            className="px-6 py-2 border border-green-400 text-green-600 rounded-md hover:bg-green-50 transition font-medium"
-          >
-            Change
+            {isUpdating ? (
+              <span className="animate-pulse">...</span>
+            ) : (
+              <Pencil className="w-5 h-5" />
+            )}
           </button>
         </div>
       </div>

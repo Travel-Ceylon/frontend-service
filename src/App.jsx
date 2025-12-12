@@ -42,7 +42,7 @@ function App() {
         <Route
           path="/registration"
           element={
-            user?.serviceType ? (
+            user?.serviceId ? (
               <Navigate to={`/profile/${user.serviceType}`} />
             ) : (
               <Registration />

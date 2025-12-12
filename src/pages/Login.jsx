@@ -4,7 +4,7 @@ import { useAuthStore } from "../store/authStore";
 import { useNavigate } from "react-router-dom";
 
 export default function ServiceProviderAuth() {
-  const [isLogin, setIsLogin] = useState(false);
+  const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -19,17 +19,21 @@ export default function ServiceProviderAuth() {
 
   const { login } = useAuthStore();
   const { register } = useAuthStore();
-  const { user } = useAuthStore();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       if (isLogin) {
-        await login({
+        const loggedInUser = await login({
           email: formData.email,
           password: formData.password,
         });
-        navigate(`/profile/${user.serviceType}`);
+
+        if (loggedInUser && loggedInUser.serviceType) {
+          navigate(`/profile/${loggedInUser.serviceType.toLowerCase()}`);
+        } else {
+          navigate("/registration");
+        }
       } else {
         if (formData.password !== formData.rePassword) {
           return null;

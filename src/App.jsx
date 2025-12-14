@@ -28,7 +28,9 @@ function App() {
   }, [loadUser]);
 
   if (isAuthChecking) {
-    return <LoadingScreen />;
+    return (
+      <LoadingScreen />
+    )
   }
 
   // Helper function to determine the correct profile path
@@ -100,14 +102,11 @@ function App() {
           element={user ? <TaxiAdmin /> : <Navigate to={"/"} />}
         />
 
-        <Route
-          path="/profile/stays"
-          element={user ? <StaysAdmin /> : <Navigate to={"/"} />}
-        >
+        <Route path='/profile/stays' element={user ? <StaysAdmin /> : <Navigate to={"/"} />}>
           <Route index element={<StaysDashboard />} />
-          <Route path="bookings" element={<StaysBookings />} />
-          <Route path="account" element={<StaysAccount />} />
-          <Route path="room/add" element={<AddRoom />} />
+          <Route path='bookings' element={<StaysBookings />} />
+          <Route path='account' element={<StaysAccount />} />
+          <Route path='room/add' element={<AddRoom/>}/>
         </Route>
         {/*Redirect any unknown path to the central logic */}
         <Route
@@ -123,7 +122,7 @@ function App() {
       </Routes>
       <Toaster />
     </>
-  );
+  )
 }
 
-export default App;
+export default App

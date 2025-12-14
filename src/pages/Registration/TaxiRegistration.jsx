@@ -12,8 +12,6 @@ function TaxiRegistration() {
 
   const { currentIndex, setCurrentIndex, submit } = useTaxiStore();
 
-  // Navigation functions to jump from next,previous
-
   const nextStep = () => {
     if (currentIndex === 3) return;
     setCurrentIndex(currentIndex + 1);
@@ -27,60 +25,51 @@ function TaxiRegistration() {
     }
   };
 
-  // Handle submit
-
   const handleSubmit = async () => {
     try {
-      // Call submit function from store
       await submit();
 
       toast.success("Successfully registered");
       navigate("/profile/taxi");
     } catch (error) {
-      toast.error(error?.message || "Registration failed");
+      toast.error(error?.message);
     }
   };
 
   return (
     <div>
-      {/* Header */}
-      <h3 className="text-3xl font-bold text-center mt-12">
+      <h3 className="text-4xl font-semibold text-center mt-12">
         Travel<span className="text-green-400">Ceylon</span>
       </h3>
 
-      {/* Step 1: Owner Information */}
       {currentIndex === 0 && (
         <>
-          <p className="text-gray-600 text-center mt-1">Owner Information</p>
+          <p className="text-gray-600 text-center mt-2">Owner Information</p>
           <StepOne />
         </>
       )}
 
-      {/* Step 2: Contact & Pricing */}
       {currentIndex === 1 && (
         <>
-          <p className="text-gray-600 text-center mt-1">Contact & Pricing</p>
+          <p className="text-gray-600 text-center mt-2">Contact & Pricing</p>
           <StepTwo />
         </>
       )}
 
-      {/* Step 3: Vehicle Information */}
       {currentIndex === 2 && (
         <>
-          <p className="text-gray-600 text-center mt-1">Vehicle Information</p>
+          <p className="text-gray-600 text-center mt-2">Vehicle Information</p>
           <StepThree />
         </>
       )}
 
-      {/* Step 4: Vehicle Images */}
       {currentIndex === 3 && (
         <>
-          <p className="text-gray-600 text-center mt-1">Vehicle Images</p>
+          <p className="text-gray-600 text-center mt-2">Vehicle Images</p>
           <StepFour />
         </>
       )}
 
-      {/* Navigation Buttons */}
       <div className="flex justify-center gap-6 items-center mb-32">
         <button
           className="px-12 py-2 rounded-md bg-green-400 text-white hover:bg-green-500 cursor-pointer"
@@ -113,12 +102,13 @@ function TaxiRegistration() {
 
 export default TaxiRegistration;
 
-// STEP ONE: Provider information collecting
+//
+// ---------- STEP COMPONENTS ----------
+//
 
 const StepOne = () => {
   const {
     driverName,
-    driverBio,
     nic,
     drivingId,
     setDriverName,
@@ -126,19 +116,10 @@ const StepOne = () => {
     setDrivingId,
     setNicImg,
     setDrivingIdImg,
-    setProfilePic,
-    setDriverBio,
   } = useTaxiStore();
 
   return (
     <div className="xl:max-w-xl xl:p-0 p-4 w-full mx-auto my-8 space-y-6">
-      {/* Driver Profile Picture */}
-      <div>
-        <p className="mb-2">Driver Profile Picture</p>
-        <ImageUploader setImage={setProfilePic} />
-      </div>
-
-      {/* Driver Name */}
       <div>
         <p>What is the Driver Name?</p>
         <CustomInput
@@ -148,18 +129,6 @@ const StepOne = () => {
         />
       </div>
 
-      {/* Driver Bio */}
-      <div>
-        <p>Tell us a little about the driver (bio)</p>
-        <CustomInput
-          label="Driver Biography (e.g., experience, professionalism)"
-          value={driverBio}
-          onChange={(e) => setDriverBio(e.target.value)}
-          isTextArea={true}
-        />
-      </div>
-
-      {/* Identification Numbers */}
       <div>
         <p>Identification Numbers</p>
         <div className="grid grid-cols-2 gap-4">
@@ -176,7 +145,6 @@ const StepOne = () => {
         </div>
       </div>
 
-      {/* ID Card Images */}
       <div className="grid grid-cols-2 gap-4">
         <div>
           <p className="mb-2">NIC Card</p>
@@ -190,8 +158,6 @@ const StepOne = () => {
     </div>
   );
 };
-
-// Step 02: Collects contact details and pricing information
 
 const StepTwo = () => {
   const {
@@ -209,7 +175,6 @@ const StepTwo = () => {
 
   return (
     <div className="xl:max-w-xl xl:p-0 p-4 w-full mx-auto my-8 space-y-6">
-      {/* Contact Numbers */}
       <div>
         <p>Your contact Numbers?</p>
         <div className="grid grid-cols-2 gap-4">
@@ -219,25 +184,22 @@ const StepTwo = () => {
             onChange={(e) => setContact1(e.target.value)}
           />
           <CustomInput
-            label="Number 2 (Optional)"
+            label="Number 2"
             value={contact2}
             onChange={(e) => setContact2(e.target.value)}
           />
         </div>
       </div>
 
-      {/* Email */}
       <div>
         <p>Setup Your Email</p>
         <CustomInput
           label="Email"
-          type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
       </div>
 
-      {/* Website */}
       <div>
         <p>Website (Optional)</p>
         <CustomInput
@@ -247,7 +209,6 @@ const StepTwo = () => {
         />
       </div>
 
-      {/* Price per KM */}
       <div>
         <p>Price per KM</p>
         <CustomInput
@@ -261,12 +222,9 @@ const StepTwo = () => {
   );
 };
 
-// Step 3: Collects vehicle specifications and registration details
-
 const StepThree = () => {
   const {
     vehicleType,
-    description,
     chasyNo,
     vehicleNo,
     province,
@@ -327,7 +285,6 @@ const StepThree = () => {
 
   return (
     <div className="xl:max-w-xl xl:p-0 p-4 w-full mx-auto my-8 space-y-6">
-      {/* Vehicle Type */}
       <div>
         <p>What is your vehicle type?</p>
         <CustomSelectbox
@@ -338,7 +295,6 @@ const StepThree = () => {
         />
       </div>
 
-      {/* Vehicle Model */}
       <div>
         <p>What is your Vehicle Model</p>
         <CustomInput
@@ -358,7 +314,6 @@ const StepThree = () => {
         />
       </div>
 
-      {/* Registration Numbers */}
       <div>
         <p>Vehicle Registration Numbers</p>
         <div className="grid grid-cols-2 gap-4">
@@ -375,7 +330,6 @@ const StepThree = () => {
         </div>
       </div>
 
-      {/* Province */}
       <div>
         <p>What is the registered province?</p>
         <CustomSelectbox
@@ -410,33 +364,20 @@ const StepThree = () => {
   );
 };
 
-// Step 4: Vehicle images section
-
 const StepFour = () => {
-  const { aggree, setAggree, setImage1, setImage2, setImage3 } = useTaxiStore();
+  const { aggree, setAggree,setImage1,setImage2,setImage3 } = useTaxiStore();
 
   return (
     <div className="xl:max-w-xl xl:p-0 p-4 w-full mx-auto my-8 space-y-6">
-      {/* Vehicle Images Upload */}
       <div>
         <p className="mb-2">Upload Images of Your Vehicle</p>
         <div className="space-y-6">
-          <div>
-            <p className="text-sm text-gray-600 mb-1">Image 1</p>
-            <ImageUploader setImage={setImage1} />
-          </div>
-          <div>
-            <p className="text-sm text-gray-600 mb-1">Image 2</p>
-            <ImageUploader setImage={setImage2} />
-          </div>
-          <div>
-            <p className="text-sm text-gray-600 mb-1">Image 3</p>
-            <ImageUploader setImage={setImage3} />
-          </div>
+          <ImageUploader setImage={setImage1} />
+          <ImageUploader setImage={setImage2} />
+          <ImageUploader setImage={setImage3} />
         </div>
       </div>
 
-      {/* Terms and Conditions */}
       <Checkbox
         title="I agree to terms and conditions"
         checked={aggree}

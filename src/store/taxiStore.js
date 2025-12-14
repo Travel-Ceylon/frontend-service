@@ -29,7 +29,9 @@ export const useTaxiStore = create((set, get) => ({
   vehicleNo: null,
   province: "Western",
   vehicleType: "Car",
-  location: null, // Vehicle model
+  city: "Colombo",
+  model: null,
+  fuelType: "Petrol",
 
   // Step 4: Vehicle Images
   image1: null,
@@ -59,9 +61,11 @@ export const useTaxiStore = create((set, get) => ({
   setVehicleNo: (vehicleNo) => set({ vehicleNo }),
   setProvince: (province) => set({ province }),
   setVehicleType: (vehicleType) => set({ vehicleType }),
-  setLocation: (location) => set({ location }),
+  setCity: (city) => set({ city }),
   setAggree: (aggree) => set({ aggree }),
   setCurrentIndex: (currentIndex) => set({ currentIndex }),
+  setModel: (model) => set({ model }),
+  setFuelType: (fuelType) => set({ fuelType }),
 
   setImage1: (image1) => {
     set({ image1 });
@@ -75,7 +79,7 @@ export const useTaxiStore = create((set, get) => ({
     set({ image3 });
   },
 
-  // GET TAXI PROFILE
+  // Get taxi profile
   // Fetches complete taxi service profile from backend
   // Updates both taxi store and auth store
 
@@ -102,6 +106,8 @@ export const useTaxiStore = create((set, get) => ({
     }
   },
 
+  //get taxiAdminDashboard details(about the taxi)
+
   getTaxiDashboardProfile: async () => {
     try {
       const { data } = await api.get("/api/service/taxi/profile");
@@ -120,15 +126,18 @@ export const useTaxiStore = create((set, get) => ({
     }
   },
 
-  // Fetches all bookings for this taxi service
+  //get taxi bookings details that a service provider gets
 
   getTaxiBookings: async () => {
     try {
-      const { data } = await api.get("/api/bookings/taxi/me");
-      set({ bookings: data.bookings || [] });
-      return data.bookings;
+      const { data } = await api.get("/api/service/taxi/bookings"); // The backend controller returns the array in data.data
+      const providerBookings = data.data || [];
+      set({ bookings: providerBookings });
+      return providerBookings;
     } catch (error) {
-      toast.error(error?.response?.data?.message || "Failed to load bookings.");
+      toast.error(
+        error?.response?.data?.message || "Failed to load provider bookings."
+      );
       throw error;
     }
   },
@@ -157,11 +166,11 @@ export const useTaxiStore = create((set, get) => ({
       province,
       vehicleType,
       perKm,
-      location,
       aggree,
+      city,
+      model,
+      fuelType,
     } = get();
-
-    // VALIDATION
 
     if (!aggree) {
       throw new Error("You must agree to terms and conditions");
@@ -194,31 +203,38 @@ export const useTaxiStore = create((set, get) => ({
       vehicleNo,
       province,
       vehicleType,
-      location,
+      city,
+      model,
+      fuelType,
 
-      // Vehicle Images (FIXED)
+      // Vehicle Images
       images: vehicleImages,
     };
 
     try {
       const { data } = await api.post("/api/service/taxi", formData);
       set({ profile: data.data });
+      const { updateServiceDetails } = useAuthStore.getState();
+      // The service ID is the ID of the newly created profile object
+      const newServiceId = data.data._id;
+      const newServiceType = "Taxi";
+
+      // Call the new function to immediately update the user's status globally
+      updateServiceDetails(newServiceId, newServiceType);
       toast.success("Taxi service registered successfully!");
     } catch (error) {
       throw new Error(error?.response?.data?.message || "Something went wrong");
     }
   },
   updateTaxiDetails: async (updates) => {
-    // updates will be the object containing the fields to update (e.g., { location: 'New Loc', driverName: 'New Name' })
     try {
       // The API call uses the PUT method and sends the 'updates' object as the request body.
       const response = await api.put("/api/service/taxi/", updates);
 
-      // Ensure the response structure is as expected: { success: true, data: updatedTaxi }
       if (response.data && response.data.data) {
         const updatedTaxiProfile = response.data.data;
 
-        // 1. Update the local store state (merging the new data)
+        // Updating the local store state (merging the new data)
         set((state) => ({
           // Spread the existing profile state and then overwrite with the new properties
           profile: { ...state.profile, ...updatedTaxiProfile },
@@ -239,6 +255,58 @@ export const useTaxiStore = create((set, get) => ({
       toast.error(message);
       console.error("Taxi Update Error:", error);
       throw error; // Re-throw the error so the component/modal can handle loading state
+    }
+  },
+
+  //mark a booking completed when a provider clicks the button
+  markBookingComplete: async (bookingId) => {
+    try {
+      const { data } = await api.patch(
+        `/api/service/taxi/bookings/${bookingId}/complete`
+      );
+
+      if (data.success) {
+        set((state) => ({
+          bookings: state.bookings.map((b) =>
+            b._id === bookingId ? { ...b, status: "completed" } : b
+          ),
+        }));
+        toast.success("Booking marked as completed!");
+        return data;
+      } else {
+        throw new Error(data.message || "Failed to mark booking complete");
+      }
+    } catch (error) {
+      const message =
+        error?.response?.data?.message || "Failed to mark booking as completed";
+      toast.error(message);
+      throw error;
+    }
+  },
+
+  //cancel a booking of a user by a provider
+  cancelBooking: async (bookingId) => {
+    try {
+      const { data } = await api.patch(
+        `/api/service/taxi/bookings/${bookingId}/cancel`
+      );
+
+      if (data.success) {
+        set((state) => ({
+          bookings: state.bookings.map((b) =>
+            b._id === bookingId ? { ...b, status: "cancelled" } : b
+          ),
+        }));
+        toast.success("Booking cancelled successfully!");
+        return data;
+      } else {
+        throw new Error(data.message || "Failed to cancel booking");
+      }
+    } catch (error) {
+      const message =
+        error?.response?.data?.message || "Failed to cancel booking";
+      toast.error(message);
+      throw error;
     }
   },
 }));

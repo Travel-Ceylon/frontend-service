@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { Pencil } from "lucide-react"; // Import the Pencil icon
-import { useAuthStore } from "../../store/authStore"; // Import your auth store
+import { Pencil } from "lucide-react";
+import { useAuthStore } from "../../store/authStore";
 
 export const AccountTab = ({ user }) => {
   // We only need state for fields that can be updated: email and password
@@ -16,7 +16,7 @@ export const AccountTab = ({ user }) => {
   useEffect(() => {
     if (user) {
       setEmail(user.email || "");
-      // Note: We intentionally don't set the password state from 'user' for security
+      // We intentionally don't set the password state from 'user' for security
     }
   }, [user]);
 
@@ -66,7 +66,7 @@ export const AccountTab = ({ user }) => {
       if (field === "Password") {
         setPassword("");
       }
-      // Note: The toast.success is already inside the updateProfile action
+      // The toast.success is already inside the updateProfile action
     } catch (error) {
       // Errors are handled in the store, but we catch here to stop loading
     } finally {
@@ -77,9 +77,9 @@ export const AccountTab = ({ user }) => {
   const isEmailChanged = email !== user?.email;
   const isPasswordValid = password.length >= 6; // Simple check
 
-  // --- RENDER ---
+  // rendering
   return (
-    <div className="max-w-screen mx-auto px-2 py-8">
+    <div className="max-w-4xl mx-auto px-2 py-8">
       <div className="space-y-4">
         {/* Email field */}
         <div className="flex items-center justify-between gap-6">
@@ -90,7 +90,7 @@ export const AccountTab = ({ user }) => {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            className="flex-1 px-4 py-2 border border-gray-300 rounded-md  focus:ring-green-400 "
             placeholder="exampleuser@gmail.com"
             disabled={isUpdating}
           />
@@ -120,7 +120,7 @@ export const AccountTab = ({ user }) => {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            className="flex-1 px-4 py-2 border border-gray-300 rounded-md  focus:ring-green-400"
             placeholder="New password (min 6 chars)"
             disabled={isUpdating}
           />

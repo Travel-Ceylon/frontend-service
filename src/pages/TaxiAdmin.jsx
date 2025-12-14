@@ -10,29 +10,34 @@ export function TaxiAdmin() {
 
   // Get data and functions from stores
   const {
-    profile, //profile state gets updated when getTaxiDashboardProfile
+    profile,
     bookings,
     getProviderProfile,
     getTaxiBookings,
     getTaxiDashboardProfile,
+    markBookingComplete,
+    cancelBooking,
   } = useTaxiStore();
   const { user } = useAuthStore();
 
-  // FETCH DATA ON COMPONENT MOUNT
-  // Loads taxi profile and bookings when component initializes
+  // Fetch data when component mounts
   useEffect(() => {
-    getProviderProfile(); // Fetches provider profile
+    getProviderProfile();
     getTaxiDashboardProfile();
-    getTaxiBookings(); // Fetches all bookings
+    getTaxiBookings();
   }, [getProviderProfile, getTaxiBookings, getTaxiDashboardProfile]);
 
-  // RENDER TAB CONTENT
-  // Switches between different tab views based on activeTab state
+  // Render tab content based on the 3 tabs there
   const renderContent = useCallback(() => {
     switch (activeTab) {
       case "Bookings":
         return (
-          <BookingsTab bookings={bookings} getTaxiBookings={getTaxiBookings} />
+          <BookingsTab
+            bookings={bookings}
+            getTaxiBookings={getTaxiBookings}
+            markComplete={markBookingComplete}
+            cancelBooking={cancelBooking}
+          />
         );
       case "Dashboard":
         return <DashboardTab profile={profile} />;
@@ -41,7 +46,15 @@ export function TaxiAdmin() {
       default:
         return null;
     }
-  }, [activeTab, bookings, profile, user, getTaxiBookings]);
+  }, [
+    activeTab,
+    bookings,
+    profile,
+    user,
+    getTaxiBookings,
+    markBookingComplete,
+    cancelBooking,
+  ]);
 
   const tabs = ["Bookings", "Dashboard", "Account"];
 
@@ -59,7 +72,7 @@ export function TaxiAdmin() {
 
   return (
     <div className="min-h-screen bg-gray-50 max-w-screen">
-      {/* HERO HEADER WITH BACKGROUND IMAGE */}
+      {/* Hero header with bg */}
       <div
         className="relative h-40 sm:h-100 bg-cover bg-center"
         style={{
@@ -67,19 +80,19 @@ export function TaxiAdmin() {
         }}
       ></div>
 
-      {/* PROFILE INFO SECTION */}
+      {/* profile info */}
       <div className="max-w-screen xl:mx-12 mx-4 px-6 -mt-8 relative z-10">
         <div className="flex items-end space-x-3">
-          {/* Profile picture */}
+          {/* profile picture */}
           <img
             src={profile.profilePic || "/default-avatar.jpg"}
             alt="Driver"
             className="sm:w-40 sm:h-40 w-24 h-24 rounded-full border-4 border-white object-cover shadow-lg"
           />
-          {/* Vehicle info */}
+          {/* vehicle info */}
           <div className="pb-4">
             <h1 className="text-sm sm:text-2xl font-semibold text-black drop-shadow-lg">
-              <span>{profile.location}</span> {vehicleTitle}
+              <span>{profile.model}</span> {vehicleTitle}
             </h1>
             <h1 className="text-gray-600 text-xs sm:text-base font-medium">
               {profile.province || "Western"}
@@ -88,8 +101,8 @@ export function TaxiAdmin() {
         </div>
       </div>
 
-      {/* TAB NAVIGATION */}
-      <div className=" max-w-screen xl:mx-18 mx-8  mt-4 sm:mt-8 mb-8">
+      {/* tab navigation according to user action */}
+      <div className="max-w-screen xl:mx-18 mx-8 mt-4 sm:mt-8 mb-8">
         <div className="flex space-x-10 justify-evenly bg-white w-full rounded-md">
           {tabs.map((tab) => (
             <button
@@ -107,7 +120,7 @@ export function TaxiAdmin() {
         </div>
       </div>
 
-      {/* TAB CONTENT AREA */}
+      {/* tab content */}
       <div className="pb-12">{renderContent()}</div>
     </div>
   );

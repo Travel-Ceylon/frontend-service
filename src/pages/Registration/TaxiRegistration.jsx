@@ -33,6 +33,7 @@ function TaxiRegistration() {
     try {
       // Call submit function from store
       await submit();
+
       toast.success("Successfully registered");
       navigate("/profile/taxi");
     } catch (error) {
@@ -269,16 +270,22 @@ const StepThree = () => {
     chasyNo,
     vehicleNo,
     province,
-    location,
+    model,
+    city,
+    fuelType,
+    setFuelType,
     setVehicleType,
     setChasyNo,
     setVehicleNo,
     setProvince,
-    setLocation,
     setDescription,
+    setModel,
+    setCity,
   } = useTaxiStore();
 
-  const vehicleTypes = ["Car", "Van", "Bus", "Three Wheeler"];
+  const vehicleTypes = ["Car", "Van", "Bus", "Tuk Tuk"];
+  const FUEL_TYPES = ["Petrol", "Diesel", "Hybrid", "Electric"];
+
   const provinces = [
     "Western",
     "Central",
@@ -289,6 +296,33 @@ const StepThree = () => {
     "North Central",
     "Uva",
     "Sabaragamuwa",
+  ];
+  const districts = [
+    "Colombo",
+    "Gampaha",
+    "Kalutara",
+    "Kandy",
+    "Matale",
+    "Nuwara Eliya",
+    "Galle",
+    "Matara",
+    "Hambantota",
+    "Jaffna",
+    "Kilinochchi",
+    "Mannar",
+    "Mullaitivu",
+    "Vavuniya",
+    "Ampara",
+    "Batticaloa",
+    "Trincomalee",
+    "Kurunegala",
+    "Puttalam",
+    "Anuradhapura",
+    "Polonnaruwa",
+    "Badulla",
+    "Monaragala",
+    "Ratnapura",
+    "Kegalle",
   ];
 
   return (
@@ -309,8 +343,18 @@ const StepThree = () => {
         <p>What is your Vehicle Model</p>
         <CustomInput
           label="Vehicle Model (e.g., Toyota Prius)"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
+          value={model}
+          onChange={(e) => setModel(e.target.value)}
+        />
+      </div>
+      {/* District */}
+      <div>
+        <p>Fuel type?</p>
+        <CustomSelectbox
+          label="District"
+          options={FUEL_TYPES}
+          value={fuelType}
+          onChange={(e) => setFuelType(e.target.value)}
         />
       </div>
 
@@ -333,12 +377,22 @@ const StepThree = () => {
 
       {/* Province */}
       <div>
-        <p>What is the Registered Province?</p>
+        <p>What is the registered province?</p>
         <CustomSelectbox
           label="Province"
           options={provinces}
           value={province}
           onChange={(e) => setProvince(e.target.value)}
+        />
+      </div>
+      {/* District */}
+      <div>
+        <p>What is your near by district?</p>
+        <CustomSelectbox
+          label="District"
+          options={districts}
+          value={city}
+          onChange={(e) => setCity(e.target.value)}
         />
       </div>
 

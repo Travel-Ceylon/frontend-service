@@ -1,5 +1,3 @@
-// src/components/Taxi/TaxiEditForm.jsx
-
 import React, { useState } from "react";
 import { useTaxiStore } from "../../store/taxiStore";
 
@@ -7,13 +5,43 @@ const TaxiEditForm = ({ currentProfile, onClose }) => {
   const { updateTaxiDetails } = useTaxiStore();
 
   const [formData, setFormData] = useState({
-    location: currentProfile.location || "",
+    model: currentProfile.model || "",
     vehicleNo: currentProfile.vehicleNo || "",
     description: currentProfile.description || "",
     driverName: currentProfile.driverName || "",
+    driverBio: currentProfile.driverBio || "",
+    city: currentProfile.city || "",
+
     // Add other fields you want to make editable
   });
   const [loading, setLoading] = useState(false);
+  const DISTRICTS = [
+    "Colombo",
+    "Gampaha",
+    "Kalutara",
+    "Kandy",
+    "Matale",
+    "Nuwara Eliya",
+    "Galle",
+    "Matara",
+    "Hambantota",
+    "Jaffna",
+    "Kilinochchi",
+    "Mannar",
+    "Mullaitivu",
+    "Vavuniya",
+    "Ampara",
+    "Batticaloa",
+    "Trincomalee",
+    "Kurunegala",
+    "Puttalam",
+    "Anuradhapura",
+    "Polonnaruwa",
+    "Badulla",
+    "Monaragala",
+    "Ratnapura",
+    "Kegalle",
+  ];
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -37,19 +65,44 @@ const TaxiEditForm = ({ currentProfile, onClose }) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {/* Location Field */}
       <div>
         <label
-          htmlFor="location"
+          htmlFor="city"
+          className="block text-sm font-medium text-gray-700"
+        >
+          Primary Operating City (District)
+        </label>
+        <select
+          name="city"
+          id="city"
+          value={formData.city} // Bind to the new 'city' state property
+          onChange={handleChange}
+          className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+          required
+        >
+          <option value="" disabled>
+            Select Primary Operating City
+          </option>
+          {DISTRICTS.map((district) => (
+            <option key={district} value={district}>
+              {district}
+            </option>
+          ))}
+        </select>
+      </div>
+      {/* model Field */}
+      <div>
+        <label
+          htmlFor="model"
           className="block text-sm font-medium text-gray-700"
         >
           Vehicle Model
         </label>
         <input
           type="text"
-          name="location"
-          id="location"
-          value={formData.location}
+          name="model"
+          id="model"
+          value={formData.model}
           onChange={handleChange}
           className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
           required
@@ -92,10 +145,10 @@ const TaxiEditForm = ({ currentProfile, onClose }) => {
           className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
         />
       </div>
-      {/* Description Field */}
+      {/* Driver bio Field */}
       <div>
         <label
-          htmlFor="description"
+          htmlFor="driverBio"
           className="block text-sm font-medium text-gray-700"
         >
           About the driver
@@ -110,7 +163,7 @@ const TaxiEditForm = ({ currentProfile, onClose }) => {
         />
       </div>
 
-      {/* Action Buttons */}
+      {/* Action buttons */}
       <div className="flex justify-end space-x-3 pt-4">
         <button
           type="button"

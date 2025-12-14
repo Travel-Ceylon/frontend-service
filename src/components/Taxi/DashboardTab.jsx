@@ -12,11 +12,11 @@ export const DashboardTab = ({ profile }) => {
     );
   }
 
-  const { images, description, driverBio } = profile;
+  const { images, description, driverBio, city } = profile;
 
   return (
     <div className="max-w-screen xl:mx-18 mx-8 px-4 sm:px-8 py-4 bg-white rounded-md">
-      {/* VEHICLE IMAGES SECTION */}
+      {/* Vehicle images appear here*/}
       <section className="mb-4 ">
         <div className="flex justify-between items-center">
           <h2 className="text-sm sm:text-lg  font-semibold mb-4 text-gray-600">
@@ -49,7 +49,7 @@ export const DashboardTab = ({ profile }) => {
         </div>
       </section>
 
-      {/* VEHICLE DESCRIPTION */}
+      {/* Vehicle description */}
       <section className="mb-4">
         <div className="flex justify-between items-center mb-3">
           <h2 className="text-sm sm:text-lg font-semibold text-gray-600">
@@ -62,9 +62,7 @@ export const DashboardTab = ({ profile }) => {
         </p>
       </section>
 
-      {/* ============================================ */}
-      {/* ABOUT THE DRIVER */}
-      {/* ============================================ */}
+      {/* City */}
       <section className="mb-8">
         <div className="flex justify-between items-center mb-3">
           <h2 className="text-sm sm:text-lg font-semibold text-gray-600">
@@ -76,6 +74,20 @@ export const DashboardTab = ({ profile }) => {
             <p className="text-gray-700 text-xs sm:text-sm leading-relaxed">
               {driverBio ||
                 "I have extensive experience as a professional driver and I am currently willing to make my passengers' journeys more comfortable, happier and safer. I am a person who communicates easily with all the passengers who travel with me and I would like to provide a friendly and reliable service while helping you explore the country."}
+            </p>
+          </div>
+        </div>
+      </section>
+      <section className="mb-8">
+        <div className="flex justify-between items-center mb-3">
+          <h2 className="text-sm sm:text-lg font-semibold text-gray-600">
+            City
+          </h2>
+        </div>
+        <div className=" ">
+          <div className="border border-gray-200 p-3 w-full rounded-md">
+            <p className="text-gray-700 text-xs sm:text-sm leading-relaxed">
+              {city}
             </p>
           </div>
         </div>
@@ -101,7 +113,7 @@ export const DashboardTab = ({ profile }) => {
           />
         </svg>
       </div>
-      {/* 2. THE MODAL */}
+      {/* Edit modal  */}
       <EditTaxiModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

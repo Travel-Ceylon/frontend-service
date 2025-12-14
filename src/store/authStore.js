@@ -62,14 +62,18 @@ export const useAuthStore = create((set) => ({
   loadUser: async () => {
     set({ isAuthChecking: true });
     try {
-      const { data } = await api.get("/api/service-provider/me");
-      if (data) {
-        set({ user: data, loading: false });
-      } else {
-        set({ user: null, loading: false });
+      const response = await api.get("/api/auth/me");
+
+      const profileData = response.data.data.profile;
+
+      // Check if data was successfully fetched
+      if (profileData) {
+        set({
+          user: profileData, // Save the full profile, which includes serviceId and serviceType
+        });
       }
     } catch (err) {
-      toast.error(err.response?.data?.message);
+      toast("Please login again", err.response?.data?.message);
       return null;
     } finally {
       set({ isAuthChecking: false });
@@ -92,4 +96,12 @@ export const useAuthStore = create((set) => ({
       set({ user: null });
     }
   },
+  updateServiceDetails: (serviceId, serviceType) =>
+    set((state) => ({
+      user: {
+        ...state.user,
+        serviceId,
+        serviceType,
+      },
+    })),
 }));

@@ -1,6 +1,13 @@
 import React from 'react';
 
-const StaticLabelInput = ({ label,type = "text", value, onChange }) => {
+const CustomInput = ({
+  label,
+  type = "text",
+  value,
+  onChange,
+  isTextArea = false,
+  rows = 3,
+}) => {
   return (
     <div className="relative w-full my-2">
       {/* Input Field */}

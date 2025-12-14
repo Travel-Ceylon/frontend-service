@@ -4,12 +4,12 @@ import { useAuthStore } from "../store/authStore";
 import { useNavigate } from "react-router-dom";
 
 export default function ServiceProviderAuth() {
-    const [isLogin, setIsLogin] = useState(true);
-    const [formData, setFormData] = useState({
-        email: "",
-        password: "",
-        rePassword: ""
-    });
+  const [isLogin, setIsLogin] = useState(true);
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    rePassword: "",
+  });
 
     const navigate = useNavigate();
 
@@ -17,31 +17,26 @@ export default function ServiceProviderAuth() {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const {login} = useAuthStore();
-    const {register} = useAuthStore();
-    const {user} = useAuthStore();
+  const { login } = useAuthStore();
+  const { register } = useAuthStore();
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            if (isLogin) {
-                await login({
-                    email: formData.email,
-                    password: formData.password
-                })
-            }
-            else {
-                if (formData.password !== formData.rePassword) {
-                    return null
-                }
-                await register({
-                    email: formData.email,
-                    password: formData.password
-                })
-            }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      if (isLogin) {
+        const loggedInUser = await login({
+          email: formData.email,
+          password: formData.password,
+        });
 
-        } catch (error) {
-            console.log(error)
+        if (loggedInUser && loggedInUser.serviceType) {
+          navigate(`/profile/${loggedInUser.serviceType.toLowerCase()}`);
+        } else {
+          navigate("/registration");
+        }
+      } else {
+        if (formData.password !== formData.rePassword) {
+          return null;
         }
     };
 

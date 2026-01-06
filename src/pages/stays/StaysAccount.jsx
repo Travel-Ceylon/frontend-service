@@ -55,7 +55,7 @@ function StaysAccount() {
                     <input
                         type={'text'}
                         placeholder={''}
-                        value={profile?.contact[0]}
+                        value={profile?.contact?.[0] || ''}
                         onChange={(e) => { }}
                         className="flex-1 border border-gray-300 rounded-md px-3 py-2"
                     />

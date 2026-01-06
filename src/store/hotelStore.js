@@ -134,10 +134,14 @@ export const useHotelStore = create((set, get) => ({
     };
 
     try {
-      const { data } = await api.post("/service/stays", formData);
+      const { data } = await api.post("/api/service/stays", formData);
       const loadUser = useAuthStore.getState().loadUser;
       await loadUser();
-      set({ profile: data });
+      const payload = data.data || data;
+      set({ profile: payload });
+      set({ facilities: payload?.facilities ? Object.entries(payload.facilities) : [] });
+      set({ isFetching: false });
+      toast.success("Hotel profile created successfully!");
     } catch (error) {
       throw new Error(error?.response?.data?.message || "Something went wrong");
     }
@@ -146,11 +150,15 @@ export const useHotelStore = create((set, get) => ({
   loadProfile: async () => {
     try {
       set({ isFetching: true })
-      const { data } = await api.get("/service/stays/me");
-      set({ profile: data })
-      set({ facilities: Object.entries(data.facilities) })
+      // Fetch the stays profile for the current provider
+      const { data } = await api.get("/api/service/stays/profile");
+      const payload = data?.data || data;
+      const profileData = payload || null;
+      set({ profile: profileData });
+      set({ facilities: profileData?.facilities ? Object.entries(profileData.facilities) : [] });
       set({ isFetching: false })
     } catch (error) {
+      console.error(error);
       set({ profile: null })
       set({ isFetching: false })
     }
@@ -158,7 +166,7 @@ export const useHotelStore = create((set, get) => ({
 
   updateDescription: async (description) => {
     try {
-      const { data } = await api.put("/service/stays", description);
+      await api.put("/api/service/stays", description);
       toast.success("Description updated successfully!")
     } catch (error) {
       toast.error(error?.message);
@@ -211,7 +219,7 @@ export const useHotelStore = create((set, get) => ({
 
     }
     try {
-      const { data } = await api.post("/service/stays/rooms", formData);
+      await api.post("/api/service/stays/rooms", formData);
       await loadProfile();
       toast.success("Room added Sucessfully!")
     } catch (error) {
@@ -222,7 +230,7 @@ export const useHotelStore = create((set, get) => ({
   deleteRoom:async(id)=>{
     const {loadProfile} = get();
     try {
-      const { data } = await api.delete(`/service/stays/rooms/${id}`);
+      await api.delete(`/api/service/stays/rooms/${id}`);
       await loadProfile();
       toast.success("Room Deleted Sucessfully!")
     } catch (error) {

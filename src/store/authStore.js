@@ -2,6 +2,12 @@ import { create } from "zustand";
 import { api } from "../config/api";
 import toast from "react-hot-toast";
 
+// Restore token from localStorage if exists so axios can send Authorization on reload
+const _savedToken = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+if (_savedToken) {
+  api.defaults.headers.common["Authorization"] = `Bearer ${_savedToken}`;
+}
+
 export const useAuthStore = create((set) => ({
   user: null,
   isAuthChecking: false,
@@ -15,13 +21,16 @@ export const useAuthStore = create((set) => ({
         "/api/service-provider/login",
         credentials
       );
-      if (data) {
-        set({ user: data, loading: false });
-        return data.data;
-      } else {
-        set({ user: null, loading: false });
-        return null;
+      const payload = data?.data || data;
+      // attach token to axios default headers for subsequent requests
+      if (payload?.token) {
+        api.defaults.headers.common["Authorization"] = `Bearer ${payload.token}`;
+        try { localStorage.setItem("token", payload.token); } catch {
+          console.error("Failed to save token to localStorage");
+        }
       }
+      set({ user: payload || null, loading: false });
+      return payload || null;
     } catch (err) {
       toast.error(err.response?.data?.message);
       set({ user: null });
@@ -33,12 +42,19 @@ export const useAuthStore = create((set) => ({
     try {
       const { data } = await api.post("/api/service-provider", userData);
       console.log(data);
-
-      if (data) {
-        set({ user: data, loading: false });
-        return data.data;
+      const payload = data?.data || data;
+      if (payload) {
+        if (payload?.token) {
+          api.defaults.headers.common["Authorization"] = `Bearer ${payload.token}`;
+          try { localStorage.setItem("token", payload.token); } catch {
+            console.error("Failed to save token to localStorage");
+          }
+        }
+        set({ user: payload, loading: false });
+        return payload;
       } else {
         set({ user: null, loading: false });
+        return null;
       }
     } catch (err) {
       toast.error(err.response?.data?.message);
@@ -52,6 +68,10 @@ export const useAuthStore = create((set) => ({
       const { data } = await api.post("/api/service-provider/logout");
       console.log(data);
       set({ user: null, loading: false });
+      try { localStorage.removeItem("token"); } catch {
+       console.error("Failed to remove token from localStorage");
+      }
+      delete api.defaults.headers.common["Authorization"];
     } catch (err) {
       toast.error(err.response?.data?.message);
       set({ user: null });
@@ -63,14 +83,13 @@ export const useAuthStore = create((set) => ({
     set({ isAuthChecking: true });
     try {
       const response = await api.get("/api/auth/me");
+      const payload = response.data?.data || response.data || null;
+      const profileData = payload?.profile || payload;
 
-      const profileData = response.data.data.profile;
-
-      // Check if data was successfully fetched
       if (profileData) {
-        set({
-          user: profileData, // Save the full profile, which includes serviceId and serviceType
-        });
+        set({ user: profileData });
+      } else {
+        set({ user: null });
       }
     } catch (err) {
       toast("Please login again", err.response?.data?.message);
@@ -85,8 +104,9 @@ export const useAuthStore = create((set) => ({
     set({ loading: true, error: null });
     try {
       const { data } = await api.put("/api/service-provider/me", updates);
-      if (data) {
-        set({ user: data, loading: false });
+      const payload = data?.data || data;
+      if (payload) {
+        set({ user: payload, loading: false });
         toast.success("Updated successfully!");
       } else {
         set({ user: null, loading: false });

@@ -1,8 +1,10 @@
 import React from 'react';
-import { asserts } from '../assets/assets';
+import toast from 'react-hot-toast';
+
 
 
 function ImageGallery({hotelImages}) {
+     if (!Array.isArray(hotelImages) || hotelImages.length === 0) return toast("No images available for this hotel."); //If no images return null
     const mainImage = hotelImages[0];                  // First 
     const smallImages = hotelImages.slice(1, 5);       // Next 4 small images
     const extraCount = hotelImages.length - 5;         // Count beyond the fifth

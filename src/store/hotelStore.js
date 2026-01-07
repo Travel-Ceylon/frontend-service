@@ -154,8 +154,9 @@ export const useHotelStore = create((set, get) => ({
       const { data } = await api.get("/api/service/stays/profile");
       const payload = data?.data || data;
       const profileData = payload || null;
-      set({ profile: profileData });
-      set({ facilities: profileData?.facilities ? Object.entries(profileData.facilities) : [] });
+      const normalizedProfile = profileData ? { ...profileData, rooms: profileData.rooms || [] } : null;
+      set({ profile: normalizedProfile });
+      set({ facilities: normalizedProfile?.facilities ? Object.entries(normalizedProfile.facilities) : [] });
       set({ isFetching: false })
     } catch (error) {
       console.error(error);
